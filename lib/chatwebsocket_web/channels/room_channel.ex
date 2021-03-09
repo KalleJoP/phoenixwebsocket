@@ -16,4 +16,16 @@ defmodule ChatwebsocketWeb.RoomChannel do
 
     {:noreply, socket}
   end
+
+  def handle_in("new_msg", msg, socket) do
+    IO.inspect(msg)
+
+    broadcast!(socket, "new_msg", %{
+      body: %{
+        message: "Klappt"
+      }
+    })
+
+    {:noreply, socket}
+  end
 end
