@@ -30,6 +30,6 @@ jobs:
     - name: Install dependencies
       run: mix deps.get --only prod
     - name: Compile stuff
-      run: MIX_ENV=prod mix compile
+      run: export SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }} && MIX_ENV=prod mix compile
     - name: Run Server
       run: PORT=4001 MIX_ENV=prod mix phx.server
