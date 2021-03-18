@@ -33,14 +33,16 @@ defmodule ChatwebsocketWeb.RoomChannel do
   end
 
   def handle_in("new_msg", msg, socket = %Phoenix.Socket{}) do
+    converted_msg = Chatwebsocket.Structs.Message.create_message(msg)
+
     with "room:" <> id <- socket.topic do
       Chatwebsocket.DatabaseConnection.update_channel_message(
         id,
-        Chatwebsocket.Structs.Message.create_message(msg)
+        converted_msg
       )
     end
 
-    broadcast!(socket, "new_msg", msg)
+    broadcast!(socket, "new_msg", Map.from_struct(converted_msg))
 
     {:noreply, socket}
   end
