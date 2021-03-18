@@ -1,25 +1,22 @@
 defmodule ChatwebsocketWeb.RoomChannel do
   use Phoenix.Channel
 
-  def join("room:lobby", _message, socket) do
-    send(self(), {:after_join, {}})
-
+  def join("room:" <> id, _message, socket) do
+    send(self(), {:after_join, %{id: id}})
     {:ok, socket}
   end
 
-  def join("room:" <> _id, _message, socket) do
-    send(self(), {:after_join, {}})
-    {:ok, socket}
-  end
+  def handle_info({:after_join, msg}, socket) do
+    channel = msg.id
 
-  def handle_info({:after_join, _msg}, socket) do
+    if !Chatwebsocket.DatabaseConnection.check_channel_existing(channel) do
+      Chatwebsocket.DatabaseConnection.insert_new_channel(channel)
+    end
+
+    messages = Chatwebsocket.DatabaseConnection.select_channel_messages(msg.id)
+
     push(socket, "room_messages", %{
-      body: [
-        %{
-          message: "Hey",
-          author: "Bot"
-        }
-      ]
+      body: messages
     })
 
     {:noreply, socket}
@@ -35,8 +32,13 @@ defmodule ChatwebsocketWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_in("new_msg", msg, socket) do
-    IO.inspect(msg)
+  def handle_in("new_msg", msg, socket = %Phoenix.Socket{}) do
+    with "room:" <> id <- socket.topic do
+      Chatwebsocket.DatabaseConnection.update_channel_message(
+        id,
+        Chatwebsocket.Structs.Message.create_message(msg)
+      )
+    end
 
     broadcast!(socket, "new_msg", msg)
 
