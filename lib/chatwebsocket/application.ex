@@ -12,9 +12,10 @@ defmodule Chatwebsocket.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Chatwebsocket.PubSub},
       # Start the Endpoint (http/https)
-      ChatwebsocketWeb.Endpoint
+      ChatwebsocketWeb.Endpoint,
       # Start a worker by calling: Chatwebsocket.Worker.start_link(arg)
       # {Chatwebsocket.Worker, arg}
+      {Xandra, name: :kloenschnack_connection, nodes: ["creepytoast.ddns.net:9042"]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
