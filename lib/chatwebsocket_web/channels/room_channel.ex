@@ -13,7 +13,7 @@ defmodule ChatwebsocketWeb.RoomChannel do
       Chatwebsocket.DatabaseConnection.insert_new_channel(channel)
     end
 
-    messages = Chatwebsocket.DatabaseConnection.select_channel_messages(msg.id)
+    messages = Chatwebsocket.DatabaseConnection.select_channel_messages(channel)
 
     push(socket, "room_messages", %{
       body: messages

@@ -7,7 +7,10 @@ defmodule Chatwebsocket.DatabaseConnection do
            ),
          {:ok, page = %Xandra.Page{}} <-
            Xandra.execute(:kloenschnack_connection, prepared, %{"channel" => channel}),
-         do: Enum.to_list(page)
+         do:
+           Enum.to_list(page)
+           |> select_map_list()
+           |> select_messages_from_map()
   end
 
   def insert_new_channel(channel) do
@@ -63,5 +66,17 @@ defmodule Chatwebsocket.DatabaseConnection do
     else
       true
     end
+  end
+
+  defp select_map_list(list) do
+    List.first(list)
+  end
+
+  defp select_messages_from_map(%{"messages" => messages}) do
+    messages
+  end
+
+  defp select_messages_from_map(_) do
+    []
   end
 end
