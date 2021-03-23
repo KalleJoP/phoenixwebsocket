@@ -24,8 +24,6 @@ defmodule ChatwebsocketWeb.RoomChannel do
   end
 
   def handle_info({:sent_rooms, username}, socket) do
-    IO.inspect(username)
-
     broadcast!(socket, "recieve_rooms", %{
       body: Chatwebsocket.DatabaseConnection.select_rooms_from_user(username)
     })

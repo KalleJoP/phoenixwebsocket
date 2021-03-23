@@ -36,7 +36,24 @@ defmodule Chatwebsocket.DatabaseConnection do
              "SELECT channel_id FROM kloenschnack.messages where author = :author group by channel_id"
            ),
          {:ok, page = %Xandra.Page{}} <-
-           Xandra.execute(:kloenschnack_connection, prepared, %{"author" => author}),
-         do: Enum.to_list(page)
+           Xandra.execute(:kloenschnack_connection, prepared, %{
+             "author" => author
+           }),
+         do:
+           Enum.to_list(page)
+           |> take_default_channel("channel1")
+           |> take_default_channel("channel2")
+           |> append_default_channels()
+  end
+
+  defp take_default_channel(list, filter) do
+    Enum.filter(list, fn item ->
+      channel_id = Map.get(item, "channel_id")
+      channel_id != filter
+    end)
+  end
+
+  defp append_default_channels(list) do
+    list ++ [%{"channel_id" => "channel1"}, %{"channel_id" => "channel2"}]
   end
 end
