@@ -5,15 +5,7 @@ defmodule Chatwebsocket.Structs.Message do
     %Chatwebsocket.Structs.Message{
       author: author,
       content: content,
-      inserted: get_local_datetime()
+      inserted: DateTime.utc_now()
     }
-  end
-
-  defp get_local_datetime() do
-    {:ok, datetime} =
-      NaiveDateTime.local_now()
-      |> DateTime.from_naive("Etc/UTC")
-
-    datetime
   end
 end
