@@ -1,6 +1,11 @@
 defmodule ChatwebsocketWeb.RoomChannel do
   use Phoenix.Channel
 
+  def join("room:lobby", %{"username" => username}, socket) do
+    send(self(), {:sent_rooms, username})
+    {:ok, socket}
+  end
+
   def join("room:" <> id, _message, socket) do
     send(self(), {:after_join, %{id: id}})
     {:ok, socket}
@@ -8,10 +13,6 @@ defmodule ChatwebsocketWeb.RoomChannel do
 
   def handle_info({:after_join, msg}, socket) do
     channel = msg.id
-
-    if !Chatwebsocket.DatabaseConnection.check_channel_existing(channel) do
-      Chatwebsocket.DatabaseConnection.insert_new_channel(channel)
-    end
 
     messages = Chatwebsocket.DatabaseConnection.select_channel_messages(channel)
 
@@ -22,11 +23,11 @@ defmodule ChatwebsocketWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:wrong_room, _msg}, socket) do
-    push(socket, "wrong_room", %{
-      body: %{
-        error: "Es gibt gerade nur room:lobby"
-      }
+  def handle_info({:sent_rooms, username}, socket) do
+    IO.inspect(username)
+
+    broadcast!(socket, "recieve_rooms", %{
+      body: Chatwebsocket.DatabaseConnection.select_rooms_from_user(username)
     })
 
     {:noreply, socket}
@@ -36,7 +37,7 @@ defmodule ChatwebsocketWeb.RoomChannel do
     converted_msg = Chatwebsocket.Structs.Message.create_message(msg)
 
     with "room:" <> id <- socket.topic do
-      Chatwebsocket.DatabaseConnection.update_channel_message(
+      Chatwebsocket.DatabaseConnection.insert_message(
         id,
         converted_msg
       )

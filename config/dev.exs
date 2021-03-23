@@ -21,6 +21,11 @@ config :chatwebsocket, ChatwebsocketWeb.Endpoint,
     ]
   ]
 
+config :snowflake,
+  # up to 1023 nodes
+  nodes: [:test],
+  epoch: 1_142_974_214_000
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
