@@ -3,7 +3,7 @@ defmodule Chatwebsocket.DatabaseConnection do
     with {:ok, prepared} <-
            Xandra.prepare(
              :kloenschnack_connection,
-             "SELECT * FROM kloenschnack.messages WHERE channel_id = :channel"
+             "SELECT * FROM kloenschnack.messages WHERE channel_id = :channel order by message_id asc"
            ),
          {:ok, page = %Xandra.Page{}} <-
            Xandra.execute(:kloenschnack_connection, prepared, %{"channel" => channel}),
