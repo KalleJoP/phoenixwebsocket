@@ -20,7 +20,7 @@ defmodule Chatwebsocket.MixProject do
   def application do
     [
       mod: {Chatwebsocket.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :snowflake]
     ]
   end
 
@@ -42,7 +42,8 @@ defmodule Chatwebsocket.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:xandra, "~> 0.11"}
+      {:xandra, "~> 0.11"},
+      {:snowflake, "~> 1.0.0"}
     ]
   end
 
