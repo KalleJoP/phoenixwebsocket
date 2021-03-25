@@ -43,7 +43,8 @@ defmodule Chatwebsocket.DatabaseConnection do
            Enum.to_list(page)
            |> take_default_channel("channel1")
            |> take_default_channel("channel2")
-           |> append_default_channels()
+           |> append_default_channel("channel1")
+           |> append_default_channel("channel2")
   end
 
   defp take_default_channel(list, filter) do
@@ -53,7 +54,7 @@ defmodule Chatwebsocket.DatabaseConnection do
     end)
   end
 
-  defp append_default_channels(list) do
-    list ++ [%{"channel_id" => "channel1"}, %{"channel_id" => "channel2"}]
+  defp append_default_channel(list, channel_name) do
+    list ++ [%{"channel_id" => channel_name}]
   end
 end
